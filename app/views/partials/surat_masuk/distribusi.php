@@ -39,7 +39,7 @@ $sumber = $_GET['sumber'];
                 <div class="col comp-grid">
                     <?php $this :: display_page_errors(); ?>
                     <div  class="bg-light p-3 animated fadeIn page-content">
-                        <form id="disposisikan-add-form" role="form" novalidate enctype="multipart/form-data" class="form page-form form-horizontal needs-validation" action="<?php print_link("surat_masuk/distribusi?csrf_token=$csrf_token") ?>" method="post">
+                        <form id="disposisikan-add-form" role="form" novalidate enctype="multipart/form-data" class="form page-form form-horizontal needs-validation" action="<?php print_link("surat_masuk/disposisi?csrf_token=$csrf_token") ?>" method="post">
                             <div>
                                 <div class="form-group ">
                                     <div class="row" style="display:none">

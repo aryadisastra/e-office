@@ -37,7 +37,7 @@ $redirect_to = $this->redirect_to;
                         <form id="index_surat-add-form" role="form" novalidate enctype="multipart/form-data" class="form page-form form-horizontal needs-validation" action="<?php print_link("index_surat/add?csrf_token=$csrf_token") ?>" method="post">
                             <div>
                                 <div class="form-group ">
-                                    <div class="row">
+                                    <!-- <div class="row">
                                         <div class="col-sm-4">
                                             <label class="control-label" for="nomor_surat">Nomor Surat <span class="text-danger">*</span></label>
                                         </div>
@@ -48,7 +48,7 @@ $redirect_to = $this->redirect_to;
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="form-group ">
                                         <div class="row">
                                             <div class="col-sm-4">
@@ -56,7 +56,7 @@ $redirect_to = $this->redirect_to;
                                             </div>
                                             <div class="col-sm-8">
                                                 <div class="input-group">
-                                                    <input class="form-control" value="<?php  echo $this->set_field_value('tanggal',date_now()); ?>" type="date" name="tanggal" placeholder="Tanggal"/> 
+                                                    <input id="ctrl-tanggal" class="form-control" value="<?php  echo $this->set_field_value('tanggal',datetime_now()); ?>" type="datetime-local" name="tanggal" placeholder="Tanggal" data-enable-time="true" data-min-date="" data-max-date="" data-date-format="Y-m-d H:i:S" data-alt-format="Y-m-d H:i:s" data-inline="false" data-no-calendar="false" data-mode="single" /> 
                                                         <div class="input-group-append">
                                                             <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                                                         </div>
@@ -84,7 +84,7 @@ $redirect_to = $this->redirect_to;
                                                     <div class="col-sm-8" >
                                                         <div class="" style="border-style: dashed; padding-left : 10px; border-color : #969590;">
                                                             <?php 
-                                                                $kepada_options = $comp_model -> index_surat_kepada_kasi_option_list();
+                                                                $kepada_options = $comp_model -> index_surat_kepada_tahap1_option_list();
                                                                 if(!empty($kepada_options)){
                                                                     foreach($kepada_options as $option){
                                                                         $value = (!empty($option['value']) ? $option['value'] : null);
@@ -105,7 +105,7 @@ $redirect_to = $this->redirect_to;
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group ">
+                                            <div class="form-group">
                                                 <div class="row">
                                                     <div class="col-sm-4">
                                                         <label class="control-label" for="tembusan">Tembusan </label>
@@ -113,7 +113,7 @@ $redirect_to = $this->redirect_to;
                                                     <div class="col-sm-8">
                                                         <div class="" style="border-style: dashed; padding-left : 10px; border-color : #969590;">
                                                                 <?php 
-                                                                    $tembusan_options = $comp_model -> index_surat_kepada_kasi_option_list();
+                                                                    $tembusan_options = $comp_model -> index_surat_kepada_tahap1_option_list();
                                                                     if(!empty($tembusan_options)){
                                                                         foreach($tembusan_options as $option){
                                                                             $value = (!empty($option['value']) ? $option['value'] : null);

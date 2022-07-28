@@ -162,7 +162,7 @@ $show_pagination = $this->show_pagination;
                                                     if($data['sifat'] == "Rahasia"){?>
                                                     <span class="badge badge-dark"><?php echo $data['sifat']; ?></span>
                                                 <?php } ?></td>
-                                                <td class="td-tanggal"> <?php echo date("d-M-Y",strtotime($data['tanggal'])); ?></td>
+                                                <td class="td-tanggal"> <?php echo $data['tanggal']; ?></td>
                                                 <th class="td-btn">
                                                     <?php if($can_view){ ?>
                                                     <a class="btn btn-sm btn-success" href="<?php print_link("index_surat/keluar/$rec_id"); ?>">

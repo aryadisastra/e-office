@@ -77,7 +77,7 @@ $show_pagination = $this->show_pagination;
                                                 <td class="td-tanggal"> <?php echo $data['tanggal']; ?></td>
                                                 <th class="td-btn">
                                                     <?php if($can_view){ ?>
-                                                    <a class="btn btn-sm btn-success" href="<?php print_link("index_surat/keluar/$rec_id"); ?>">
+                                                    <a class="btn btn-sm btn-success" href="<?php print_link("index_surat/log_surat_ditolak/$rec_id"); ?>">
                                                         <i class="fa fa-eye"></i> 
                                                     </a>
                                                     <?php } ?>

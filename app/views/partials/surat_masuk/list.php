@@ -32,10 +32,12 @@ $show_pagination = $this->show_pagination;
                 <div class="col ">
                     <h4 class="record-title">SURAT MASUK</h4>
                 </div>
-                <div class="col-sm-3 " <?php if(strtolower(USER_NAME) != 'operator') echo 'style="display:none"' ?>>
+                <div class="col-sm-3 " <?php if(strtolower(USER_NAME) != 'pokmin') echo 'style="display:none"' ?>>
+                    <?php if($can_add){ ?>
                     <a  class="btn btn btn-primary my-1" href="<?php print_link("surat_masuk/add") ?>">
                         Buat Surat Masuk 
                     </a>
+                    <?php } ?>
                 </div>
                 <div class="col-sm-4 ">
                     <form  class="search" action="<?php print_link('surat_masuk'); ?>" method="get">
