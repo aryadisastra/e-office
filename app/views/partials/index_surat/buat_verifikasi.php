@@ -16,7 +16,7 @@ $nomor = $_GET['id'];
         <div class="container">
             <div class="row ">
                 <div class="col ">
-                    <h4 class="record-title">BUAT BALASAN</h4>
+                    <h4 class="record-title">BUAT VERIFIKASI</h4>
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@ $nomor = $_GET['id'];
                 <div class="col comp-grid">
                     <?php $this :: display_page_errors(); ?>
                     <div  class="bg-light p-3 animated fadeIn page-content">
-                        <form id="balasan_surat-add-form" role="form" novalidate enctype="multipart/form-data" class="form page-form form-horizontal needs-validation" action="<?php print_link("index_surat/buat_nomor?csrf_token=$csrf_token") ?>" method="post">
+                        <form id="balasan_surat-add-form" role="form" novalidate enctype="multipart/form-data" class="form page-form form-horizontal needs-validation" action="<?php print_link("index_surat/buat_verifikasi?csrf_token=$csrf_token") ?>" method="post">
                             <div>
                                 <div class="form-group ">
                                     <div class="row" style="display:none">
@@ -44,54 +44,17 @@ $nomor = $_GET['id'];
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <div class="row" >
-                                            <div class="col-sm-4">
-                                                <label class="control-label" for="nomor_surat">Nomor Surat </label>
-                                            </div>
-                                            <div class="col-sm-8">
-                                                <div class="">
-                                                    <input id="ctrl-nomor_surat"  type="text" placeholder="Nomor Surat" name="nomor_surat"  class="form-control " />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     <div class="form-group ">
                                         <div class="row">
                                             <div class="col-sm-4">
-                                                <label class="control-label" for="pengguna">Pengguna </label>
+                                                <label class="control-label" for="lampiran">Hasil Verifikasi </label>
                                             </div>
                                             <div class="col-sm-8">
                                                 <div class="">
-                                                    <input id="ctrl-pengguna"  value="<?php  echo $this->set_field_value('pengguna',USER_NAME); ?>" type="text" placeholder="Pengguna"  readonly name="pengguna"  class="form-control " />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group ">
-                                            <div class="row">
-                                                <div class="col-sm-4">
-                                                    <label class="control-label" for="tanggal">Tanggal </label>
-                                                </div>
-                                                <div class="col-sm-8">
-                                                    <div class="input-group">
-                                                        <input id="ctrl-tanggal" class="form-control" value="<?php  echo $this->set_field_value('tanggal',datetime_now()); ?>" type="datetime-local" name="tanggal" placeholder="Tanggal" data-enable-time="true" data-min-date="" data-max-date="" data-date-format="Y-m-d H:i:S" data-alt-format="Y-m-d H:i:s" data-inline="false" data-no-calendar="false" data-mode="single" /> 
-                                                            <div class="input-group-append">
-                                                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group ">
-                                                <div class="row">
-                                                    <div class="col-sm-4">
-                                                        <label class="control-label" for="balasan">Catatan <span class="text-danger">*</span></label>
-                                                    </div>
-                                                    <div class="col-sm-8">
-                                                        <div class="">
-                                                            <textarea placeholder="Balasan" id="ctrl-balasan"  required="" rows="5" name="keterangan" class="htmleditor form-control"><?php  echo $this->set_field_value('keterangan',""); ?></textarea>
-                                                            <!--<div class="invalid-feedback animated bounceIn text-center">Please enter text</div>-->
+                                                    <div class="dropzone " input="#ctrl-lampiran" fieldname="lampiran"    data-multiple="true" dropmsg="Unggah Lampiran"    btntext="Browse" filesize="100" maximum="10">
+                                                        <input name="lampiran" id="ctrl-lampiran" class="dropzone-input form-control" value="<?php  echo $this->set_field_value('lampiran',""); ?>" type="text"  />
+                                                            <!--<div class="invalid-feedback animated bounceIn text-center">Please a choose file</div>-->
+                                                            <div class="dz-file-limit animated bounceIn text-center text-danger"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -100,8 +63,8 @@ $nomor = $_GET['id'];
                                         <div class="form-group form-submit-btn-holder text-center mt-3">
                                             <div class="form-ajax-status"></div>
                                             <button class="btn btn-primary" type="submit" id="addButton">
-                                                <i class="fa fa-check"></i>
-                                                Selesaikan
+                                                Kirim
+                                                <i class="fa fa-send"></i>
                                             </button>
                                         </div>
                                     </form>

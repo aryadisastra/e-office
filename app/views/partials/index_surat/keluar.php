@@ -53,7 +53,7 @@ $show_export_btn = $this->show_export_btn;
                         $rec_id = (!empty($data['id_surat']) ? urlencode($data['id_surat']) : null);
                         $counter++;
                         ?>
-                        <div class="">
+                        <div id="page-report-body" class="">
                             <table class="table table-hover table-borderless table-striped">
                                 <!-- Table Body Start -->
                                 <tbody class="page-data" id="page-data-<?php echo $page_element_id; ?>">
@@ -75,7 +75,8 @@ $show_export_btn = $this->show_export_btn;
                                     </tr>
                                     <tr  class="td-tembusan">
                                         <th class="title"> Tembusan: </th>
-                                        <td class="value"> <?php echo $data['tembusan']; ?></td>
+                                        <!-- <td class="value"> <?php echo $data['tembusan']; ?></td> -->
+                                        <td class="value"><a class="btn btn-sm btn-info page-modal" href="<?php print_link("index_surat/cek_tembusan"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2">Lihat Tembusan</a></td>
                                     </tr>
                                     <tr  class="td-subjek">
                                         <th class="title"> Subjek: </th>
@@ -86,13 +87,13 @@ $show_export_btn = $this->show_export_btn;
                                         <!-- <td class="value"> <?php echo $data['keterangan']; ?></td> -->
                                         <td class="value"><a class="btn btn-sm btn-info page-modal" href="<?php print_link("index_surat/cek_catatan"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2">Lihat Catatan</a></td>
                                     </tr>
-                                    <tr  class="td-disposisi">
-                                        <th class="title"> Tanda Tangan: </th>
-                                        <td class="value"><a class="btn btn-sm btn-info page-modal" href="<?php print_link("index_surat/cek_signature"); ?>?id=<?php echo $data['id_index']; ?>">Lihat Riwayat</a></td>
-                                    </tr>
                                     <tr  class="td-lampiran">
                                         <th class="title"> Lampiran: </th>
                                         <td class="value"><?php Html :: page_link_file($data['lampiran']); ?></td>
+                                    </tr>
+                                    <tr  class="td-lampiran">
+                                        <th class="title">Konsep Lampiran: </th>
+                                        <td class="value"><?php Html :: page_link_file($data['lampiran_konsep']); ?></td>
                                     </tr>
                                     <tr  class="td-sifat">
                                         <th class="title"> Sifat: </th>
@@ -115,158 +116,49 @@ $show_export_btn = $this->show_export_btn;
                                 <!-- Table Body End -->
                             </table>
                         </div>
-                        <div id="page-report-body" class="d-none">
-                            <table class="table table-hover table-borderless table-striped">
-                                <!-- Table Body Start -->
-                                <tbody class="page-data" id="page-data-<?php echo $page_element_id; ?>">
-                                    <tr  class="td-nomor_surat">
-                                        <th class="title"> Nomor Surat: </th>
-                                        <td class="value"> <?php echo $data['nomor_surat']; ?></td>
-                                    </tr>
-                                    <tr  class="td-tanggal">
-                                        <th class="title"> Tanggal: </th>
-                                        <td class="value"> <?php echo $data['tanggal']; ?></td>
-                                    </tr>
-                                    <tr  class="td-sifat">
-                                        <th class="title"> Sifat: </th>
-                                        <td class="value">
-                                            <?php
-                                            if($data['sifat'] == "Biasa"){?>
-                                            <span class="badge badge-success"><?php echo $data['sifat']; ?></span>
-                                            <?php } ?>
-                                            <?php
-                                            if($data['sifat'] == "Prioritas"){?>
-                                            <span class="badge badge-danger"><?php echo $data['sifat']; ?></span>
-                                            <?php } ?>
-                                            <?php
-                                            if($data['sifat'] == "Rahasia"){?>
-                                            <span class="badge badge-dark"><?php echo $data['sifat']; ?></span>
-                                            <?php } ?>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <br>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <td align="center">Tanda Tangan</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    
-                                    <?php   
-                                    
-                                    $dataSign = $comp_model->tableSignature($data['id_surat']);
-                                    $arrayTtd = [
-                                        'dircab' => '',
-                                        'kasub'  => '',
-                                        'kabag'  => '',
-                                        'kasi'   => '', 
-                                    ];
-                                    
-                                    foreach($dataSign as $dt) {
-                                            $getUser = $comp_model->getUserData($dt['pengguna']);
-                                            if($getUser[0]['bagian'] == 5)
-                                            {
-                                                $arrayTtd['dircab'] = $dt['signature'];
-                                            } 
-                                            else if($getUser[0]['bagian'] == 4)
-                                            {
-                                                $arrayTtd['kasub'] = $dt['signature'];
-                                            }
-                                            else if($getUser[0]['bagian'] == 3)
-                                            {
-                                                $arrayTtd['kabag'] = $dt['signature'];
-                                            }
-                                            else if($getUser[0]['bagian'] == 2)
-                                            {
-                                                $arrayTtd['kasi'] = $dt['signature'];
-                                            }
-                                        }
-                                    ?>
-                                    <tr>
-                                        <td align="center"><img width="225" height="125" src="<?php print_link('assets/images/signature/'.$arrayTtd['dircab'])?>" alt=""></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="center">Dircab</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <td align="right"></td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td align="right"><img width="150" height="150" src="<?php print_link('assets/images/signature/'.$arrayTtd['kasub'])?>" alt=""></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right">Kasub</td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><img width="150" height="150" src="<?php print_link('assets/images/signature/'.$arrayTtd['kabag'])?>" alt=""></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right">Kabag</td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><img width="150" height="150" src="<?php print_link('assets/images/signature/'.$arrayTtd['kasi'])?>" alt=""></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right">Kasi</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
                         <div class="p-3 d-flex">
                             <div class="dropup export-btn-holder mx-1">
                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa fa-save"></i> Export
                                 </button>
-                                <?php if($data['status'] != 404){?>
-                                    <?php if($data['can_act'] == true){?>
-                                        
-                                        <!-- <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN != 3 && USER_BAGIAN != 5 && $data['tahap_surat'] != 2){?>
-                                        <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("balasan_surat/add"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
-                                            <i class="fa fa-send"></i> Lanjutkan
-                                        </a>
-                                        <?php } ?> -->
-    
-                                        <?php if($data['status'] == USER_BAGIAN  && USER_BAGIAN != 1 && USER_BAGIAN != 5){?>
+                                <?php if($data['can_act'] == true){?>
+                                    <?php if($data['tahap_surat'] != 3){?>
+                                        <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN != 3 && $data['tahap_surat'] != 2){?>
                                         <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("balasan_surat/add"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
                                             <i class="fa fa-send"></i> Lanjutkan
                                         </a>
                                         <?php } ?>
-    
-                                        <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN == 5){?>
+                                        <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN != 3 && $data['tahap_surat'] == 2 && USER_BAGIAN != 1){?>
+                                        <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("balasan_surat/add"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
+                                            <i class="fa fa-send"></i> Lanjutkan
+                                        </a>
+                                        <?php } ?>
+                                        <?php if(4 == USER_BAGIAN || USER_BAGIAN == 5){?>
                                         <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("balasan_surat/verifikasi"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
                                             <i class="fa fa-send"></i> Verifikasi
                                         </a>
                                         <?php } ?>
-    
-                                        <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN != 4 && USER_BAGIAN != 5 && $data['tahap_surat'] == 2){?>
-                                        <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("index_surat/buat_nomor"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
-                                            <i class="fa fa-send"></i> Buat Nomor
+                                        <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN != 4 && $data['tahap_surat'] == 2){?>
+                                        <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("index_surat/buat_verifikasi"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
+                                            <i class="fa fa-send"></i> Buat Verifikasi
                                         </a>
                                         <?php } ?>
-    
                                         <?php if($data['status'] == USER_BAGIAN && $data['tahap_surat'] != 2 && $data['status'] != 0){?>
                                         <a class="btn btn-sm btn-danger page-modal"  href="<?php print_link("balasan_surat/kembalikan"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
                                             <i class="fa fa-arrow-left"></i> Kembalikan
                                         </a>
                                         <?php } ?>
-    
-                                        <!-- <?php if(USER_BAGIAN == 3 && $data['tahap_surat'] != 2){?>
+                                        <?php if(USER_BAGIAN == 3 && $data['tahap_surat'] != 2){?>
                                         <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("balasan_surat/buat_nomor"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
-                                            <i class="fa fa-send"></i> Buatkan Nomor
+                                            <i class="fa fa-send"></i> Verifasi Tata Bahasa
                                         </a>
-                                        <?php } ?> -->
-    
+                                        <?php } ?>
+                                    <?php } else if($data['tahap_surat'] == 3 && $data['status'] != 500) {?>
+                                        <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("index_surat/buat_nomor"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
+                                            <i class="fa fa-send"></i> Buat Nomor
+                                        </a>
                                     <?php } ?>
-                               <?php } ?>
+                                <?php } ?>
                                 <a class="btn btn-sm btn-info page-modal" style="margin-left:5px"  href="<?php print_link("index_surat/log"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2">
                                     Log
                                 </a>
