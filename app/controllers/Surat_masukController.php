@@ -64,7 +64,7 @@ class Surat_masukController extends SecureController{
 		$total_pages = ceil($total_records / $page_limit);
 		if(	!empty($records)){
 			foreach($records as &$record){
-				$record['tanggal'] = relative_date($record['tanggal']);
+				$record['tanggal'] = date('d-M-Y',strtotime($record['tanggal']));
 			}
 		}
 		$data = new stdClass;
@@ -119,7 +119,7 @@ class Surat_masukController extends SecureController{
 			$getvaltwo = $db->query("SELECT * FROM disposisi where id_surat = ".$rec_id." AND (kepada = '".USER_NAME."' AND is_done = 1)");
 			if($getval) $record['can_disposisi'] = 'yes';
 			if($getvaltwo) $record['can_disposisi'] = 'no';
-			$record['tanggal'] = relative_date($record['tanggal']);
+			$record['tanggal'] = date('d-M-Y',strtotime($record['tanggal']));
 			$page_title = $this->view->page_title = "Surat Masuk";
 		$this->view->report_filename = date('Y-m-d') . '-' . $page_title;
 		$this->view->report_title = $page_title;
@@ -227,28 +227,33 @@ class Surat_masukController extends SecureController{
 
 	function distribusi($formdata = null){
 		if($formdata){
-			$postdata = $this->format_request_data($formdata);
 			$db = $this->GetModel();
+			$postdata = $this->format_request_data($formdata);
 			$getData = $db->query("SELECT * FROM surat_masuk WHERE id_surat =".$formdata['id_surat']);
 			$nomor_surat = $getData[0]['nomor_surat'];
 			$fixStatus = (int) $getData[0]['status'] - 1;
-			$updateView = $getData[0]['can_view'].', '.$postdata['kepada'].', '.$postdata['tembusan'] ;
+			$updateView = $getData[0]['can_view'].', '.$postdata['kepada'].', '.$postdata['tembusan'];
+			if(USER_BAGIAN == 2) $updateData = $db->query("UPDATE surat_masuk SET status = 500, pengguna = '".USER_NAME."', kepada = '".$postdata['kepada']."', can_view = '".$updateView."' WHERE id_surat = '".$getData[0]['id_surat']."'");
 			if(USER_BAGIAN == 3) $updateData = $db->query("UPDATE surat_masuk SET status = '".$fixStatus."', pengguna = '".USER_NAME."', kepada = '".$postdata['kepada']."', can_view = '".$updateView."' WHERE id_surat = '".$getData[0]['id_surat']."'");
 			if(USER_BAGIAN == 4)$updateData = $db->query("UPDATE surat_masuk SET status = '".$fixStatus."', pengguna = '".USER_NAME."', kepada = '".$postdata['kepada']."', can_view = '".$updateView."' WHERE id_surat = '".$getData[0]['id_surat']."'");
-			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,sumber,nomor_surat) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Disposisikan',1,'".$getData[0]['nomor_surat']."')");
-			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,sumber,nomor_surat) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".date("Y-m-d H:i",time())."','Di Disposisikan',1,'".$getData[0]['nomor_surat']."')");
+			$log_ctt = "Di Disposisikan";
+			if(USER_BAGIAN == 2 ) $log_ctt = "Di Distribusikan";
+			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,sumber,nomor_surat) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','".$log_ctt."',1,'".$getData[0]['nomor_surat']."')");
+			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,sumber,nomor_surat) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".date("Y-m-d H:i",time())."','".$log_ctt."',1,'".$getData[0]['nomor_surat']."')");
 			$array_kepada = explode(",",$postdata['kepada']);
+			if(USER_BAGIAN != 2) {
 			$isi_disposisi = $formdata['disposisi'];
 			$fix_disposisi = implode(", ",$isi_disposisi); 
 			if(USER_BAGIAN != 3) $postdata['disposisi'];
-			foreach($array_kepada as $dt)
-			{
-			$disposisi = $db->query("INSERT INTO disposisi_surat (id_surat,pengguna,isi_disposisi,waktu,nomor_surat,sumber)
-									VALUES ('".$formdata['id_surat']."','".$dt."','".$fix_disposisi."','".date("Y-m-d H:i",time())."','".$nomor_surat."',1)");
-			$surat_disposisi = $db->query("INSERT INTO disposisi (id_surat,kepada) VALUES ('".$formdata['id_surat']."','".$dt."')");
+				foreach($array_kepada as $dt)
+				{
+				$disposisi = $db->query("INSERT INTO disposisi_surat (id_surat,pengguna,isi_disposisi,waktu,nomor_surat,sumber)
+										VALUES ('".$formdata['id_surat']."','".$dt."','".$fix_disposisi."','".date("Y-m-d H:i",time())."','".$nomor_surat."',1)");
+				$surat_disposisi = $db->query("INSERT INTO disposisi (id_surat,kepada) VALUES ('".$formdata['id_surat']."','".$dt."')");
+				}
 			}
 			if(USER_BAGIAN == 3) $db->query("UPDATE disposisi SET is_done = 1 WHERE kepada = '".USER_NAME."' AND id_surat =".$formdata['id_surat']);
-			if ($log && $catatan && $disposisi)  {
+			if ($log && $catatan)  {
 				$this->set_flash_msg("Surat Berhasil Diupdate", "success");
 				return	$this->redirect("home");
 			} else {

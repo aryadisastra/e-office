@@ -164,7 +164,7 @@ class Index_suratController extends SecureController
 			);
 			$this->filter_vals = true; //set whether to remove empty fields
 			$modeldata = $this->modeldata = $this->validate_form($postdata);
-			$modeldata['nomor_surat'] = null;
+			$modeldata['nomor_surat'] = $postdata['nomor_surat'];
 			$modeldata['status'] = 2;
 			$modeldata['status_persetujuan'] = 1;
 			$modeldata['tahap_surat'] = 1;
@@ -185,13 +185,8 @@ class Index_suratController extends SecureController
 			if ($this->validated()) {
 				// return print_r($modeldata);
 				$rec_id = $this->rec_id = $db->insert($tablename, $modeldata);
-				$tembusanarr = explode(',',$postdata['tembusan']);
-				foreach($tembusanarr as $tb)
-				{
-					$tembusan = $db->query("INSERT INTO log_tembusan_surat (id_surat,pengguna,waktu,sumber) VALUES ('".$fixedId."','".$tb."','".date("Y-m-d H:i",time())."',2)");
-				}
-				$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$fixedId."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Buat','".$postdata['lampiran']."',2)");
-				$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,lampiran,sumber) VALUES ('".$fixedId."','".USER_NAMA."','".$modeldata['keterangan']."','".date("Y-m-d H:i",time())."','Di Buat','".$postdata['lampiran']."',2)");
+				$log = $db->query("INSERT INTO log_surat (id_surat,nomor_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$fixedId."','".$modeldata['nomor_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Buat','".$postdata['lampiran']."',2)");
+				$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,nomor_surat,pengguna,catatan,waktu,keterangan,lampiran,sumber) VALUES ('".$fixedId."','".$modeldata['nomor_surat']."','".USER_NAMA."','".$modeldata['keterangan']."','".date("Y-m-d H:i",time())."','Di Buat','".$postdata['lampiran']."',2)");
 				if (!isset($formdata['disposisi'])){
 					if(strtolower(USER_NAME) != 'operator') {
 						$db->query('UPDATE index_surat SET status_persetujuan = 1 where nomor_surat = '.$modeldata['nomor_surat']);
@@ -443,7 +438,7 @@ class Index_suratController extends SecureController
 			$db->orderBy("surat_masuk.id_surat", ORDER_TYPE);
 		}
 		if(USER_BAGIAN != 6 && strtolower(USER_NAME) != 'operator'){
-			$db->where("can_view LIKE '%".USER_NAME."%' AND status <= 4");
+			$db->where("can_view LIKE '%".USER_NAME."%' AND status = ".USER_BAGIAN);
 		}
 		if ($fieldname) {
 			$db->where($fieldname, $fieldvalue); //filter by a single field name
@@ -474,6 +469,87 @@ class Index_suratController extends SecureController
 		$this->view->report_paper_size = "A4";
 		$this->view->report_orientation = "portrait";
 		$this->render_view("index_surat/tb_disposisi.php", $data); //render the full page
+	}
+
+	function list_disposisi($fieldname = null, $fieldvalue = null)
+	{
+		$request = $this->request;
+		$db = $this->GetModel();
+		$tablename = 'surat_masuk';
+		$role = USER_BAGIAN;
+		$fields = array(
+			"pengguna",
+			"subjek",
+			"sifat",
+			"tanggal",
+			"id_surat"
+		);
+		$pagination = $this->get_pagination(MAX_RECORD_COUNT); // get current pagination e.g array(page_number, page_limit)
+		//search table record
+		if (!empty($request->search)) {
+			$text = trim($request->search);
+			$search_condition = "(
+				index_surat.nomor_surat LIKE ? OR 
+				index_surat.pengguna LIKE ? OR 
+				index_surat.kepada LIKE ? OR 
+				index_surat.tembusan LIKE ? OR 
+				index_surat.disposisi LIKE ? OR 
+				index_surat.subjek LIKE ? OR 
+				index_surat.keterangan LIKE ? OR 
+				index_surat.lampiran LIKE ? OR 
+				index_surat.sifat LIKE ? OR 
+				index_surat.tanggal LIKE ? OR 
+				index_surat.persetujuan LIKE ? OR 
+				index_surat.balasan LIKE ? OR 
+				index_surat.id_surat LIKE ?
+			)";
+			$search_params = array(
+				"%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%"
+			);
+			//setting search conditions
+			$db->where($search_condition, $search_params);
+			//template to use when ajax search
+			$this->view->search_template = "index_surat/search.php";
+		}
+		if (!empty($request->orderby)) {
+			$orderby = $request->orderby;
+			$ordertype = (!empty($request->ordertype) ? $request->ordertype : ORDER_TYPE);
+			$db->orderBy($orderby, $ordertype);
+		} else {
+			$db->orderBy("surat_masuk.id_surat", ORDER_TYPE);
+		}
+		if(USER_BAGIAN != 6 && strtolower(USER_NAME) != 'operator'){
+			$db->where("can_view LIKE '%".USER_NAME."%'");
+		}
+		if ($fieldname) {
+			$db->where($fieldname, $fieldvalue); //filter by a single field name
+		}
+		$tc = $db->withTotalCount();
+		$records = $db->get('surat_masuk', $pagination, $fields);
+		$records_count = count($records);
+		$total_records = intval($tc->totalCount);
+		$page_limit = $pagination[1];
+		$total_pages = ceil($total_records / $page_limit);
+		if (!empty($records)) {
+			foreach ($records as &$record) {
+				$record['tanggal'] = date('d-M-Y',strtotime($record['tanggal']));
+			}
+		}
+		$data = new stdClass;
+		$data->records = $records;
+		$data->record_count = $records_count;
+		$data->total_records = $total_records;
+		$data->total_page = $total_pages;
+		if ($db->getLastError()) {
+			$this->set_page_error();
+		}
+		$page_title = $this->view->page_title = "Index Surat";
+		$this->view->report_filename = date('Y-m-d') . '-' . $page_title;
+		$this->view->report_title = $page_title;
+		$this->view->report_layout = "report_layout.php";
+		$this->view->report_paper_size = "A4";
+		$this->view->report_orientation = "portrait";
+		$this->render_view("index_surat/list_disposisi.php", $data); //render the full page
 	}
 	/**
 	 * List page records
@@ -596,7 +672,146 @@ class Index_suratController extends SecureController
 		} else {
 			$db->orderBy("index_surat.id_surat", ORDER_TYPE);
 		}
-		if(USER_NAME != 'OPERATOR' || USER_BAGIAN != 6) $db->where("can_view LIKE '%" . USER_NAME . "%'");
+		$bagian = USER_BAGIAN;
+		if(USER_NAME != 'OPERATOR' || USER_BAGIAN != 6) $db->where("can_view LIKE '%" . USER_NAME . "%' AND status  =".$bagian." AND status != 404");
+		if ($fieldname) {
+			$db->where($fieldname, $fieldvalue); //filter by a single field name
+		}
+		$tc = $db->withTotalCount();
+		$records = $db->get($tablename, $pagination, $fields);
+		$records_count = count($records);
+		$total_records = intval($tc->totalCount);
+		$page_limit = $pagination[1];
+		$total_pages = ceil($total_records / $page_limit);
+		$data = new stdClass;
+		$data->records = $records;
+		$data->record_count = $records_count;
+		$data->total_records = $total_records;
+		$data->total_page = $total_pages;
+		if ($db->getLastError()) {
+			$this->set_page_error();
+		}
+		$page_title = $this->view->page_title = "Surat Keluar";
+		$this->view->report_filename = date('Y-m-d') . '-' . $page_title;
+		$this->view->report_title = $page_title;
+		$this->view->report_layout = "report_layout.php";
+		$this->view->report_paper_size = "A4";
+		$this->view->report_orientation = "portrait";
+		$this->render_view("index_surat/index_keluar.php", $data); //render the full page
+	}
+
+	function list_keluar($fieldname = null, $fieldvalue = null)
+	{
+		$request = $this->request;
+		$db = $this->GetModel();
+		$tablename = $this->tablename;
+		$fields = array(
+			"nomor_surat",
+			"kepada",
+			"subjek",
+			"sifat",
+			"tanggal",
+			"id_index",
+			"id_surat"
+		);
+		$pagination = $this->get_pagination(MAX_RECORD_COUNT); // get current pagination e.g array(page_number, page_limit)
+		//search table record
+		if (!empty($request->search)) {
+			$text = trim($request->search);
+			$search_condition = "(
+				index_surat.nomor_surat LIKE ? OR 
+				index_surat.kepada LIKE ? OR 
+				index_surat.tembusan LIKE ? OR 
+				index_surat.disposisi LIKE ? OR 
+				index_surat.subjek LIKE ? OR 
+				index_surat.sifat LIKE ? OR 
+				index_surat.tanggal LIKE ?
+			)";
+			$search_params = array(
+				"%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%"
+			);
+			//setting search conditions
+			$db->where($search_condition, $search_params);
+			//template to use when ajax search
+			$this->view->search_template = "index_surat/search.php";
+		}
+		if (!empty($request->orderby)) {
+			$orderby = $request->orderby;
+			$ordertype = (!empty($request->ordertype) ? $request->ordertype : ORDER_TYPE);
+			$db->orderBy($orderby, $ordertype);
+		} else {
+			$db->orderBy("index_surat.id_surat", ORDER_TYPE);
+		}
+		if(USER_NAME != 'OPERATOR' || USER_BAGIAN != 6) $db->where("can_view LIKE '%" . USER_NAME . "%' AND status != 404");
+		if ($fieldname) {
+			$db->where($fieldname, $fieldvalue); //filter by a single field name
+		}
+		$tc = $db->withTotalCount();
+		$records = $db->get($tablename, $pagination, $fields);
+		$records_count = count($records);
+		$total_records = intval($tc->totalCount);
+		$page_limit = $pagination[1];
+		$total_pages = ceil($total_records / $page_limit);
+		$data = new stdClass;
+		$data->records = $records;
+		$data->record_count = $records_count;
+		$data->total_records = $total_records;
+		$data->total_page = $total_pages;
+		if ($db->getLastError()) {
+			$this->set_page_error();
+		}
+		$page_title = $this->view->page_title = "Surat Keluar";
+		$this->view->report_filename = date('Y-m-d') . '-' . $page_title;
+		$this->view->report_title = $page_title;
+		$this->view->report_layout = "report_layout.php";
+		$this->view->report_paper_size = "A4";
+		$this->view->report_orientation = "portrait";
+		$this->render_view("index_surat/index_keluar.php", $data); //render the full page
+	}
+
+	function list_print($fieldname = null, $fieldvalue = null)
+	{
+		$request = $this->request;
+		$db = $this->GetModel();
+		$tablename = $this->tablename;
+		$fields = array(
+			"nomor_surat",
+			"kepada",
+			"subjek",
+			"sifat",
+			"tanggal",
+			"id_index",
+			"id_surat"
+		);
+		$pagination = $this->get_pagination(MAX_RECORD_COUNT); // get current pagination e.g array(page_number, page_limit)
+		//search table record
+		if (!empty($request->search)) {
+			$text = trim($request->search);
+			$search_condition = "(
+				index_surat.nomor_surat LIKE ? OR 
+				index_surat.kepada LIKE ? OR 
+				index_surat.tembusan LIKE ? OR 
+				index_surat.disposisi LIKE ? OR 
+				index_surat.subjek LIKE ? OR 
+				index_surat.sifat LIKE ? OR 
+				index_surat.tanggal LIKE ?
+			)";
+			$search_params = array(
+				"%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%", "%$text%"
+			);
+			//setting search conditions
+			$db->where($search_condition, $search_params);
+			//template to use when ajax search
+			$this->view->search_template = "index_surat/search.php";
+		}
+		if (!empty($request->orderby)) {
+			$orderby = $request->orderby;
+			$ordertype = (!empty($request->ordertype) ? $request->ordertype : ORDER_TYPE);
+			$db->orderBy($orderby, $ordertype);
+		} else {
+			$db->orderBy("index_surat.id_surat", ORDER_TYPE);
+		}
+		if(USER_NAME != 'OPERATOR' || USER_BAGIAN != 6) $db->where("can_view LIKE '%" . USER_NAME . "%' AND status = 6");
 		if ($fieldname) {
 			$db->where($fieldname, $fieldvalue); //filter by a single field name
 		}
@@ -777,7 +992,6 @@ class Index_suratController extends SecureController
 			"sifat",
 			"tahap_surat",
 			"status",
-			"lampiran_konsep",
 			"persetujuan",
 			"balasan"
 		);
@@ -788,13 +1002,14 @@ class Index_suratController extends SecureController
 		}
 		$record = $db->getOne($tablename, $fields);
 		if ($record) {
-			$record['tanggal'] = relative_date($record['tanggal']);
+			$record['tanggal'] = date('d-M-Y',strtotime($record['tanggal']));
 			$record['can_act'] = false;
 			$getDataView = $db->query("SELECT * FROM index_surat WHERE kepada LIKE '%".USER_NAME."%' AND id_surat = ".$record['id_surat']);
 			if($getDataView) $record['can_act'] = true;
 			$page_title = $this->view->page_title = "Surat Keluar";
 			$this->view->report_filename = date('Y-m-d') . '-' . $page_title;
 			$this->view->report_title = $page_title;
+			if(USER_BAGIAN == 1 AND $record['status'] == 6) $db->query("UPDATE index_surat SET is_printed = 1 WHERE id_surat = ".$record['id_surat']);
 			$this->view->report_layout = "report_layout.php";
 			$this->view->report_paper_size = "A4";
 			$this->view->report_orientation = "portrait";
@@ -887,15 +1102,6 @@ class Index_suratController extends SecureController
 		$this->render_view("index_surat/cek_catatan.php", $data);
 	}
 
-	function cek_tembusan(){
-		$request = $this->request;
-		$db = $this->GetModel();
-		$nomorSurat = $_GET['id'];
-		$sumber = $_GET['sumber'];
-		$data = $db->query("select * from log_tembusan_surat where id_surat = '".$nomorSurat."' AND sumber = '".$sumber."'");
-		$this->render_view("index_surat/cek_tembusan.php", $data);
-	}
-
 	function cek_signature(){
 		$request = $this->request;
 		$db = $this->GetModel();
@@ -910,29 +1116,8 @@ class Index_suratController extends SecureController
 			$status = strtolower($formdata['kepada'][0]) != 'kasubditbinkom' ? 5 : 4; 
 			$getData = $db->query("SELECT * FROM index_surat WHERE id_surat =".$formdata['id_surat']);
 			$updateView = $getData[0]['can_view'].', '.$formdata['kepada'][0];
-			$updateData = $db->query("UPDATE index_surat SET status = 500, nomor_surat = '".$formdata['nomor_surat']."' WHERE id_surat = '".$formdata['id_surat']."'");
-			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Surat Selesai',2)");
-			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".date("Y-m-d H:i",time())."','Selesai',2)");
-			
-			if ($updateData) {
-				$this->set_flash_msg("Surat Berhasil Diupdate", "success");
-				return	$this->redirect("home");
-			} else {
-				$this->set_page_error();
-			}
-		}
-		$page_title = $this->view->page_title = "Balas Surat";
-		$this->render_view("index_surat/buat_nomor.php");
-	}
-
-	function buat_verifikasi($formdata = null){
-		if($formdata){
-			$db = $this->GetModel();
-			$status = 4; 
-			$getData = $db->query("SELECT * FROM index_surat WHERE id_surat =".$formdata['id_surat']);
-			$updateView = $getData[0]['can_view'].', kasubditbinkom';
-			$updateData = $db->query("UPDATE index_surat SET status = '".$status."', pengguna = '".USER_NAME."', kepada = 'kasubditbinkom', tahap_surat = 2, lampiran_konsep = '".$formdata['lampiran']."', can_view = '".$updateView."' WHERE id_surat = '".$getData[0]['id_surat']."'");
-			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,sumber,lampiran) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Nomor Dibuat',2,'".$formdata['lampiran']."')");
+			$updateData = $db->query("UPDATE index_surat SET status = '".$status."', pengguna = '".USER_NAME."', kepada = '".$formdata['kepada'][0]."',nomor_surat = '".$formdata['nomor_surat']."', tahap_surat = 2, can_view = '".$updateView."' WHERE id_surat = '".$getData[0]['id_surat']."'");
+			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Nomor Dibuat',2)");
 			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".date("Y-m-d H:i",time())."','Nomor Dibuat',2)");
 			
 			if ($updateData) {
@@ -943,7 +1128,7 @@ class Index_suratController extends SecureController
 			}
 		}
 		$page_title = $this->view->page_title = "Balas Surat";
-		$this->render_view("index_surat/buat_verifikasi.php");
+		$this->render_view("index_surat/buat_nomor.php");
 	}
 
 	function surat_selesai()
@@ -957,8 +1142,8 @@ class Index_suratController extends SecureController
 	function surat_ditolak()
 	{
 		$db = $this->GetModel();
-		$reject = $db->query("select * from index_surat where flow_status = 3 AND (pengguna LIKE '".USER_NAME."' OR tembusan LIKE '".USER_NAME."' OR kepada LIKE '".USER_NAME."')");
-		if(USER_BAGIAN == 6) $reject = $db->query("select * from index_surat where flow_status = 3");
+		$reject = $db->query("select * from index_surat where status = 404 AND can_view LIKE '%".USER_NAME."%'");
+		if(USER_BAGIAN == 6) $reject = $db->query("select * from index_surat where status = 404");
 		$this->render_view("index_surat/surat_ditolak.php", $reject);
 	}
 

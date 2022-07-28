@@ -18,7 +18,7 @@ $current_page = $this->set_current_page_link();
             <div class="row ">
                 <div class="col-md-12 comp-grid">
                 </div>
-                <div class="col-md-3 col-sm-3 comp-grid">
+                <div class="col-md-4 col-sm-4 comp-grid">
                     <?php $rec_count = $comp_model->getcount_suratmasuk();  ?>
                     <a class="animated zoomIn record-count card bg-light text-white"  href="<?php print_link("surat_masuk/") ?>">
                         <div class="row">
@@ -35,9 +35,10 @@ $current_page = $this->set_current_page_link();
                         </div>
                     </a>
                 </div>
-                <div class="col-md-3 col-sm-3 comp-grid" >
-                    <?php $rec_count = $comp_model->getcount_suratkeluar();  ?>
-                    <a class="animated zoomIn record-count card bg-light text-white"  href="<?php print_link("index_surat/index_keluar") ?>">
+                <?php if(USER_NAME != 'kauraplikasi') { ?>
+                    <div class="col-md-4 col-sm-4 comp-grid" >
+                        <?php $rec_count = $comp_model->getcount_suratkeluar();  ?>
+                        <a class="animated zoomIn record-count card bg-light text-white"  href="<?php print_link("index_surat/list_keluar") ?>">
                         <div class="row">
                             <div class="col-2">
                                 <i class="fa fa-globe"></i>
@@ -52,10 +53,10 @@ $current_page = $this->set_current_page_link();
                         </div>
                     </a>
                 </div>
-                <div class="col-md-3 col-sm-3 comp-grid">
+                <div class="col-md-4 col-sm-4 comp-grid">
                     <?php $rec_count = $comp_model->getcount_disposisi();  ?>
-                    <a class="animated zoomIn record-count card bg-light text-white"  href="<?php print_link("index_surat/tb_disposisi") ?>">
-                        <div class="row">
+                    <a class="animated zoomIn record-count card bg-light text-white"  href="<?php print_link("index_surat/list_disposisi") ?>">
+                    <div class="row">
                             <div class="col-2">
                                 <i class="fa fa-globe"></i>
                             </div>
@@ -69,6 +70,26 @@ $current_page = $this->set_current_page_link();
                         </div>
                     </a>
                 </div>
+                <?php } ?>
+                <?php if(USER_NAME == 'pokmin') { ?>
+                    <div class="col-md-4 col-sm-4 comp-grid">
+                        <?php $rec_count = $comp_model->getcount_suratprinted();  ?>
+                        <a class="animated zoomIn record-count card bg-light text-white"  href="<?php print_link("index_surat/list_print") ?>">
+                            <div class="row">
+                                <div class="col-2">
+                                    <i class="fa fa-globe"></i>
+                                </div>
+                                <div class="col-10">
+                                    <div class="flex-column justify-content align-center">
+                                        <div class="title">PRINT</div>
+                                        <small class=""></small>
+                                    </div>
+                                </div>
+                                <h4 class="value"><strong><?php echo $rec_count; ?></strong></h4>
+                            </div>
+                        </a>
+                    </div>
+                <?php } ?>
             </div>
 
             <div  class="">
@@ -84,6 +105,8 @@ $current_page = $this->set_current_page_link();
                         ?>
                     </div>
                 </div>
+                
+                <?php if(USER_NAME != 'kauraplikasi') { ?>
                 <div class="col-md-6 comp-grid">
                     <h5 class="mb-3">DISPOSISI</h5>
                     <div class="bg-secondary ">
@@ -92,7 +115,10 @@ $current_page = $this->set_current_page_link();
                         ?>
                     </div>
                 </div>
+                <?php } ?>
             </div>
+            
+            <?php if(USER_NAME != 'kauraplikasi') { ?>
             <div class="row ">
                 <div class="col-md-12 comp-grid">
                 </div>
@@ -113,6 +139,7 @@ $current_page = $this->set_current_page_link();
                     </div>
                 </div>
             </div>
+            <?php } ?>
         </div>
     </div>
         </div>

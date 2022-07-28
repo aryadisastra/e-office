@@ -105,6 +105,15 @@ class SharedController extends BaseController
 		return $arr;
 	}
 
+	function index_surat_kepada_kasi_option_list()
+	{
+		$db = $this->GetModel();
+		$sqltext = "SELECT  DISTINCT username AS value ,username AS label FROM pengguna WHERE bagian = 2 ORDER BY id DESC";
+		$queryparams = null;
+		$arr = $db->rawQuery($sqltext, $queryparams);
+		return $arr;
+	}
+
 	function index_surat_kepada_kaur_option_list()
 	{
 		$db = $this->GetModel();
@@ -123,7 +132,6 @@ class SharedController extends BaseController
 		$ownID = (int) USER_ID;
 		$sqltext = "SELECT  DISTINCT username AS value ,username AS label FROM pengguna WHERE id = '".USER_PARENT."' ORDER BY id DESC";
 		if (USER_BAGIAN == 1) $sqltext = "SELECT  DISTINCT username AS value ,username AS label FROM pengguna WHERE bagian = 2 ORDER BY id DESC";
-		if (USER_BAGIAN == 0) $sqltext = "SELECT  DISTINCT username AS value ,username AS label FROM pengguna WHERE bagian = 2 ORDER BY id DESC";
 		$queryparams = null;
 		$arr = $db->rawQuery($sqltext, $queryparams);
 		return $arr;
@@ -235,6 +243,20 @@ class SharedController extends BaseController
 		return $val;
 	}
 
+	function getcount_suratprinted()
+	{
+		$db = $this->GetModel();
+		$sqltext = "SELECT COUNT(*) AS num FROM index_surat where can_view LIKE '%".USER_NAME."%' AND status = 6 AND is_printed = 0";
+		if(USER_BAGIAN == 6) $sqltext = "SELECT COUNT(*) AS num FROM surat_masuk ";
+		$queryparams = null;
+		$val = $db->rawQueryValue($sqltext, $queryparams);
+
+		if (is_array($val)) {
+			return $val[0];
+		}
+		return $val;
+	}
+
 	/**
 	 * getcount_suratkeluar Model Action
 	 * @return Value
@@ -242,7 +264,8 @@ class SharedController extends BaseController
 	function getcount_suratkeluar()
 	{
 		$db = $this->GetModel();
-		$sqltext = "SELECT COUNT(*) AS num FROM index_surat where can_view LIKE '%".USER_NAME."%'";
+		$bagian = USER_BAGIAN;
+		$sqltext = "SELECT COUNT(*) AS num FROM index_surat where can_view LIKE '%".USER_NAME."%' AND status = ".$bagian." AND status != 404";
 		if(USER_BAGIAN == 6) $sqltext = "SELECT COUNT(*) AS num FROM index_surat";
 		$queryparams = null;
 		$val = $db->rawQueryValue($sqltext, $queryparams);
@@ -261,7 +284,7 @@ class SharedController extends BaseController
 	{
 		$db = $this->GetModel();
 		$role = USER_BAGIAN;
-		if($role != null) $sqltext = "SELECT COUNT(*) AS num FROM surat_masuk WHERE status <= 4 AND can_view LIKE '%".USER_NAME."%'";
+		if($role != null) $sqltext = "SELECT COUNT(*) AS num FROM surat_masuk WHERE status = ".USER_BAGIAN."  AND can_view LIKE '%".USER_NAME."%'";
 		if($role == null) $sqltext = "SELECT COUNT(*) AS num FROM surat_masuk ";
 		if(USER_BAGIAN == 6) $sqltext = "SELECT COUNT(*) AS num FROM surat_masuk ";
 		$queryparams = null;
@@ -339,7 +362,8 @@ class SharedController extends BaseController
 	function getUserData($nama)
 	{
 		$db = $this->GetModel();
-		$sqltext = "SELECT * FROM pengguna WHERE nama = ".$nama;
+		$sqltext = "SELECT * FROM pengguna WHERE nama = '$nama'";
+		// return var_dump($sqltext);
 		$queryparams = null;
 		$arr = $db->rawQuery($sqltext, $queryparams);
 		return $arr;

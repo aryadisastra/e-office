@@ -137,7 +137,7 @@ class Balasan_suratController extends SecureController{
 			$db = $this->GetModel();
 			$getData = $db->query("SELECT * FROM index_surat WHERE id_surat =".$formdata['id_surat']);
 			$bentuk = USER_BAGIAN != 4 ? (USER_BAGIAN != 5 ? 'Paraf' : 'Tanda Tangan') : 'Tanda Tangan';
-			if(strtolower(USER_NAME) != 'operator') $add_sign = $db->query("INSERT INTO signature (id_surat,pengguna,bentuk,signature) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$bentuk."','".$namefile."')");
+			if(strtolower(USER_NAME) != 'operator') $add_sign = $db->query("INSERT INTO signature (id_surat,pengguna,bentuk,signature,tanggal) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$bentuk."','".$namefile."','".date("Y-m-d H:i",time())."')");
 			if($add_sign)
 			{
 				file_put_contents($file, $image_base64);
@@ -154,12 +154,7 @@ class Balasan_suratController extends SecureController{
 			$updateData = $db->query("UPDATE index_surat SET status = '".$fixStatus."', pengguna = '".USER_NAME."', kepada = '".$postdata['kepada']."', tembusan = '".$postdata['tembusan']."', can_view = '".$updateView."' WHERE id_surat = '".$getData[0]['id_surat']."'");
 			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Lanjutkan','".$formdata['lampiran']."',2)");
 			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".date("Y-m-d H:i",time())."','Di Lanjutkan','".$formdata['lampiran']."',2)");
-			$tembusanarr = explode(',',$postdata['tembusan']);
-			foreach($tembusanarr as $tb)
-			{
-				$tembusan = $db->query("INSERT INTO log_tembusan_surat (id_surat,pengguna,waktu,sumber) VALUES ('".$formdata['id_surat']."','".$tb."','".date("Y-m-d H:i",time())."',2)");
-			}
-
+			
 			if ($log && $catatan && $updateData) {
 				$this->set_flash_msg("Surat Berhasil Diupdate", "success");
 				return	$this->redirect("home");
@@ -184,29 +179,15 @@ class Balasan_suratController extends SecureController{
 			$db = $this->GetModel();
 			$getData = $db->query("SELECT * FROM index_surat WHERE id_surat =".$formdata['id_surat']);
 			$bentuk = USER_BAGIAN != 4 ? (USER_BAGIAN != 5 ? 'Paraf' : 'Tanda Tangan') : 'Tanda Tangan';
-			if(strtolower(USER_NAME) != 'operator') $add_sign = $db->query("INSERT INTO signature (id_surat,pengguna,bentuk,signature) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$bentuk."','".$namefile."')");
+			if(strtolower(USER_NAME) != 'operator') $add_sign = $db->query("INSERT INTO signature (id_surat,pengguna,bentuk,signature,tanggal) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$bentuk."','".$namefile."','".date("Y-m-d H:i",time())."')");
 			if($add_sign)
 			{
 				file_put_contents($file, $image_base64);
 			}
-			$fixStatus = 1;
-			$viewBefore = $db->query("SELECT * FROM index_surat WHERE id_surat = '".$getData[0]['id_surat']."'");
-			$updateView = $viewBefore[0]['can_view'].', pokmin';
-			if($getData[0]['status'] == 4) {
-				$updateData = $db->query("UPDATE index_surat SET tahap_surat = 2, kepada = 'pokmin', status = 1 where id_surat = ".$formdata['id_surat']);
-			}
-			if($getData[0]['status'] == 2 && $getData[0]['tahap_surat'] == 2) {
-				$updateData = $db->query("UPDATE index_surat SET tahap_surat = 1, kepada = 'dircab', status = 5 where id_surat = ".$formdata['id_surat']);
-			}
-			$updateData = $db->query("UPDATE index_surat SET tahap_surat = 3, status = '".$fixStatus."', pengguna = '".USER_NAME."', kepada = 'pokmin', tembusan = '".$postdata['tembusan']."', can_view = '".$updateView."' WHERE id_surat = '".$getData[0]['id_surat']."'");
-			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Lanjutkan','".$formdata['lampiran']."',2)");
-			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".date("Y-m-d H:i",time())."','Di Lanjutkan','".$formdata['lampiran']."',2)");
-			$tembusanarr = explode(',',$postdata['tembusan']);
-			foreach($tembusanarr as $tb)
-			{
-				$tembusan = $db->query("INSERT INTO log_tembusan_surat (id_surat,pengguna,waktu,sumber) VALUES ('".$formdata['id_surat']."','".$tb."','".date("Y-m-d H:i",time())."',2)");
-			}
-
+			$updateData = $db->query("UPDATE index_surat SET status = 500, pengguna = '".USER_NAME."' WHERE id_surat = '".$getData[0]['id_surat']."'");
+			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Verifikasi','".$formdata['lampiran']."',2)");
+			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".date("Y-m-d H:i",time())."','Di Verifikasi','".$formdata['lampiran']."',2)");
+			
 			if ($log && $catatan && $updateData) {
 				$this->set_flash_msg("Surat Berhasil Diupdate", "success");
 				return	$this->redirect("home");
@@ -214,20 +195,16 @@ class Balasan_suratController extends SecureController{
 				$this->set_page_error();
 			}
 		}
-		$page_title = $this->view->page_title = "Balas Surat";
+		$page_title = $this->view->page_title = "Verifikasi Surat";
 		$this->render_view("balasan_surat/verifikasi.php");
 	}
 
 	function kembalikan($formdata = null){
 		if($formdata){
 			$db = $this->GetModel();
-			$getData = $db->query("SELECT * FROM index_surat WHERE id_surat =".$formdata['id_surat']);
-			$fixStatus = (int) $getData[0]['status'] - 1;
-			$flow_status = isset($formdata['reject']) ? 3 : 2;
-			$keterangan = isset($formdata['reject']) ? 'Di Tolak' : 'Di Kembalikan';
-			$updateData = $db->query("UPDATE index_surat SET status = '".$fixStatus."',flow_status = '".$flow_status."', pengguna = '".USER_NAME."', kepada = '".$getData[0]['pengguna']."' WHERE id_surat = '".$getData[0]['id_surat']."'");
-			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','".$keterangan."','".$formdata['lampiran']."',2)");
-			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,lampiran,waktu,keterangan,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".$formdata['lampiran']."','".date("Y-m-d H:i",time())."','".$keterangan."',2)");
+			$updateData = $db->query("UPDATE index_surat SET status = 404 WHERE id_surat = '".$formdata['id_surat']."'");
+			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Kembalikan','".$formdata['lampiran']."',2)");
+			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,lampiran,waktu,keterangan,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','Di Kembalikan','".$formdata['lampiran']."','".date("Y-m-d H:i",time())."','".$keterangan."',2)");
 			
 			if ($log && $catatan && $updateData) {
 				$this->set_flash_msg("Surat Berhasil Diupdate", "success");
@@ -252,14 +229,13 @@ class Balasan_suratController extends SecureController{
 			$db = $this->GetModel();
 			$getData = $db->query("SELECT * FROM index_surat WHERE id_surat =".$formdata['id_surat']);
 			$bentuk = USER_BAGIAN != 4 ? (USER_BAGIAN != 5 ? 'Paraf' : 'Tanda Tangan') : 'Tanda Tangan';
-			$add_sign = $db->query("INSERT INTO signature (id_surat,pengguna,bentuk,signature) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$bentuk."','".$namefile."')");
+			$add_sign = $db->query("INSERT INTO signature (id_surat,pengguna,bentuk,signature,tanggal) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$bentuk."','".$namefile."','".date("Y-m-d H:i",time())."')");
 			if($add_sign)
 			{
 				file_put_contents($file, $image_base64);
 			}
-			$viewBefore = $db->query("SELECT * FROM index_surat WHERE id_surat = '".$getData[0]['id_surat']."'");
-			$updateView = $viewBefore[0]['can_view'].', pokmin' ;
-			$updateData = $db->query("UPDATE index_surat SET status = 1, pengguna = '".USER_NAME."', kepada = 'pokmin', can_view = '".$updateView."', tahap_surat = 2 WHERE id_surat = '".$getData[0]['id_surat']."'");
+			$canViewFix = $getData[0]['can_view'].', pokmin';
+			$updateData = $db->query("UPDATE index_surat SET status = 1, pengguna = '".USER_NAME."', kepada = 'pokmin', tahap_surat = 2, can_view = '".$canViewFix."' WHERE id_surat = '".$getData[0]['id_surat']."'");
 			$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Pembuatan Nomor','".$formdata['lampiran']."',2)");
 			$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,lampiran,sumber) VALUES ('".$formdata['id_surat']."','".USER_NAMA."','".$formdata['keterangan']."','".date("Y-m-d H:i",time())."','Pembuatan Nomor','".$formdata['lampiran']."',2)");
 			

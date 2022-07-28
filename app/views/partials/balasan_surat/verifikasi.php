@@ -25,7 +25,7 @@ $flow = $_GET['flow'];
         <div class="container">
             <div class="row ">
                 <div class="col ">
-                    <h4 class="record-title">BUAT BALASAN</h4>
+                    <h4 class="record-title">Verifikasi Surat</h4>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@ $flow = $_GET['flow'];
                 <div class="col comp-grid">
                     <?php $this :: display_page_errors(); ?>
                     <div  class="bg-light p-3 animated fadeIn page-content">
-                        <form id="balasan_surat-add-form" role="form" novalidate enctype="multipart/form-data" class="form page-form form-horizontal needs-validation" action="<?php print_link("balasan_surat/verifikasi?csrf_token=$csrf_token") ?>" method="post">
+                        <form id="balasan_surat-add-form" role="form" novalidate enctype="multipart/form-data" class="form page-form form-horizontal needs-validation" action="<?php print_link("balasan_surat/add?csrf_token=$csrf_token") ?>" method="post">
                             <div>
                                 <div class="form-group ">
                                     <div class="row" style="display:none">
@@ -72,39 +72,10 @@ $flow = $_GET['flow'];
                                                 </div>
                                                 <div class="col-sm-8">
                                                     <div class="input-group">
-                                                        <input id="ctrl-tanggal" class="form-control" value="<?php  echo $this->set_field_value('tanggal',datetime_now()); ?>" type="datetime-local"  name="tanggal" placeholder="Tanggal" data-enable-time="true" data-min-date="" data-max-date="" data-date-format="Y-m-d H:i:S" data-alt-format="Y-m-d H:i:s" data-inline="false" data-no-calendar="false" data-mode="single" /> 
+                                                        <input id="ctrl-tanggal" class="form-control" value="<?php  echo $this->set_field_value('tanggal',datetime_now()); ?>" readonly type="datetime-local"  name="tanggal" placeholder="Tanggal" data-enable-time="true" data-min-date="" data-max-date="" data-date-format="Y-m-d H:i:S" data-alt-format="Y-m-d H:i:s" data-inline="false" data-no-calendar="false" data-mode="single" /> 
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group ">
-                                                <div class="row">
-                                                    <div class="col-sm-4">
-                                                        <label class="control-label" for="kepada">Tembusan</label>
-                                                    </div>
-                                                    <div class="col-sm-8" >
-                                                        <div class="" style="border-style: dashed; padding-left : 10px; border-color : #969590;">
-                                                            <?php 
-                                                                $kepada_options = $comp_model -> index_surat_kepada_tahap1_option_list();
-                                                                if(!empty($kepada_options)){
-                                                                    foreach($kepada_options as $option){
-                                                                        $value = (!empty($option['value']) ? $option['value'] : null);
-                                                                        $label = (!empty($option['label']) ? $option['label'] : $value);
-                                                                        $selected = $this->set_field_selected('tembusan',$value, "");
-                                                                        ?>
-                                                                        <div class="form-check">
-                                                                            <input type="checkbox" name="tembusan[]" id="<?php echo 'ctrl-tembusan'.$value; ?>" value="<?php echo $value; ?>" class="form-check-input">
-                                                                            <label class="form-check-label" for="<?php echo 'ctrl-tembusan'.$value; ?>">   
-                                                                                <?php echo strtoupper($label); ?>
-                                                                            </label>
-                                                                        </div>
-                                                                <?php
-                                                                    }
-                                                                }
-                                                                ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -142,7 +113,7 @@ $flow = $_GET['flow'];
                                         <div class="form-group form-submit-btn-holder text-center mt-3">
                                             <div class="form-ajax-status"></div>
                                             <button class="btn btn-primary" type="submit" id="addButton">
-                                                Kirim
+                                                Verifikasi
                                                 <i class="fa fa-send"></i>
                                             </button>
                                         </div>
@@ -158,7 +129,6 @@ $flow = $_GET['flow'];
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
 <script>
     $(document).ready(() => {
-        $('#addButton').css('display','none')
         var canvasDiv = document.getElementById('canvasDiv');
         var canvas = document.createElement('canvas');
         canvas.setAttribute('id', 'canvas');
@@ -171,7 +141,6 @@ $flow = $_GET['flow'];
         
         context = canvas.getContext("2d");
         $('#canvas').mousedown(function(e) {
-            $('#addButton').css('display','inline-block')
             var offset = $(this).offset()
             var mouseX = e.pageX - this.offsetLeft;
             var mouseY = e.pageY - this.offsetTop;
@@ -186,6 +155,7 @@ $flow = $_GET['flow'];
                 var offset = $(this).offset()
                 //addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
                 addClick(e.pageX - offset.left, e.pageY - offset.top, true);
+                console.log(e.pageX, offset.left, e.pageY, offset.top);
                 redraw();
             }
         });

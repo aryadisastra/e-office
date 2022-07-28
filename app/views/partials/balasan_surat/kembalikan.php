@@ -63,7 +63,7 @@ $nomor = $_GET['id'];
                                                 </div>
                                                 <div class="col-sm-8">
                                                     <div class="input-group">
-                                                        <input id="ctrl-tanggal" class="form-control" value="<?php  echo $this->set_field_value('tanggal',datetime_now()); ?>" type="datetime-local" name="tanggal" placeholder="Tanggal" data-enable-time="true" data-min-date="" data-max-date="" data-date-format="Y-m-d H:i:S" data-alt-format="Y-m-d H:i:s" data-inline="false" data-no-calendar="false" data-mode="single" /> 
+                                                        <input id="ctrl-tanggal" class="form-control" value="<?php  echo $this->set_field_value('tanggal',datetime_now()); ?>" type="datetime-local" readonly name="tanggal" placeholder="Tanggal" data-enable-time="true" data-min-date="" data-max-date="" data-date-format="Y-m-d H:i:S" data-alt-format="Y-m-d H:i:s" data-inline="false" data-no-calendar="false" data-mode="single" /> 
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                                                             </div>
@@ -100,31 +100,15 @@ $nomor = $_GET['id'];
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="form-group ">
-                                                <div class="row">
-                                                    <div class="col-sm-4">
-                                                    </div>
-                                                    <div class="col-sm-8" >
-                                                        <div class="">
-                                                            <div class="form-check">
-                                                                <input type="checkbox" name="reject" id="reject-3" value="reject" class="form-check-input">
-                                                                <label class="form-check-label" for="reject-3" style="color: #fc605d;">   
-                                                                    Kembalikan Tanpa Revisi
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group form-submit-btn-holder text-center mt-3">
-                                            <div class="form-ajax-status"></div>
-                                            <button id="submit-btn" class="btn btn-danger" type="submit">
-                                                <i class="fa fa-arrow-left"></i>
-                                                Kembalikan
-                                            </button>
                                         </div>
                                     </form>
+                                    <div class="form-group form-submit-btn-holder text-center mt-3">
+                                        <div class="form-ajax-status"></div>
+                                        <button id="submit-btn" class="btn btn-danger" type="submit">
+                                            <i class="fa fa-arrow-left"></i>
+                                            Kembalikan
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -134,6 +118,11 @@ $nomor = $_GET['id'];
 
 <script>
     $('#submit-btn').click(function () {
-        window.location = '/home';
+        if (confirm("Dengan Mengembalikan Surat Maka Surat Di Anggap Ditolak Dan Tidak Bisa Di Proses Lagi") == true) {
+            $('#balasan_surat-add-form').submit()
+            window.location = '/home';
+        } else {
+            text = "You canceled!";
+        }
     });
 </script>

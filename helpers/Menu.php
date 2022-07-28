@@ -24,7 +24,7 @@ class Menu extends BaseController
 		),
 
 		array(
-			'path' => 'index_surat/index_keluar',
+			'path' => 'index_surat/list_keluar',
 			'label' => 'SURAT KELUAR',
 			'icon' => '<i class="fa fa-send "></i>'
 		),
@@ -63,6 +63,14 @@ class Menu extends BaseController
 		array(
 			"value" => "user",
 			"label" => "user",
+		),
+		array(
+			"value" => "kaur",
+			"label" => "kaur",
+		),
+		array(
+			"value" => "superadmin",
+			"label" => "superadmin",
 		),
 	);
 }

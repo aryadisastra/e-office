@@ -52,7 +52,7 @@ $show_export_btn = $this->show_export_btn;
                         $rec_id = (!empty($data['nomor_surat']) ? urlencode($data['nomor_surat']) : null);
                         $counter++;
                         ?>
-                        <div id="page-report-body" class="">
+                        <div class="">
                             <table class="table table-hover table-borderless table-striped">
                                 <!-- Table Body Start -->
                                 <tbody class="page-data" id="page-data-<?php echo $page_element_id; ?>">
@@ -113,6 +113,7 @@ $show_export_btn = $this->show_export_btn;
                                 <!-- Table Body End -->
                             </table>
                         </div>
+
                         <div class="p-3 d-flex">
                             <div class="dropup export-btn-holder mx-1">
                                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -146,7 +147,7 @@ $show_export_btn = $this->show_export_btn;
                                                     <i class="fa fa-send"></i> Disposisikan
                                                 </a>
                                                 <?php } ?>
-                                                <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN == 2){?>
+                                                <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN == 2 && $data['kepada'] == USER_NAME){?>
                                                 <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("surat_masuk/distribusi"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=1">
                                                     <i class="fa fa-send"></i> Distribusikan
                                                 </a>
@@ -170,5 +171,70 @@ $show_export_btn = $this->show_export_btn;
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        
+                        <div id="page-report-body" class="d-none">
+                            <table class="table table-hover table-borderless table-striped">
+                                <!-- Table Body Start -->
+                                <tbody class="page-data" id="page-data-<?php echo $page_element_id; ?>">
+                                    <tr  class="td-nomor_surat">
+                                        <th class="title"> Nomor Surat: </th>
+                                        <td class="value"> <?php echo $data['nomor_surat']; ?></td>
+                                    </tr>
+                                    <tr  class="td-tanggal">
+                                        <th class="title"> Tanggal: </th>
+                                        <td class="value"> <?php echo $data['tanggal']; ?></td>
+                                    </tr>
+                                    <tr  class="td-pengguna">
+                                        <th class="title"> Pengguna: </th>
+                                        <td class="value"> <?php echo $data['pengguna']; ?></td>
+                                    </tr>
+                                    <tr  class="td-kepada">
+                                        <th class="title"> Kepada: </th>
+                                        <td class="value"> <?php echo  implode(', ', explode(",", $data['kepada'])); ?></td>
+                                    </tr>
+                                    <tr  class="td-sifat">
+                                        <th class="title"> Sifat: </th>
+                                        <td class="value">
+                                            <?php
+                                            if($data['sifat'] == "Biasa"){?>
+                                            <span class="badge badge-success"><?php echo $data['sifat']; ?></span>
+                                            <?php } ?>
+                                            <?php
+                                            if($data['sifat'] == "Prioritas"){?>
+                                            <span class="badge badge-danger"><?php echo $data['sifat']; ?></span>
+                                            <?php } ?>
+                                            <?php
+                                            if($data['sifat'] == "Rahasia"){?>
+                                            <span class="badge badge-dark"><?php echo $data['sifat']; ?></span>
+                                            <?php } ?>
+                                        </td>
+                                    </tr>
+                                    <!-- <tr  class="td-persetujuan">
+                                        <th class="title"> Persetujuan: </th>
+                                        <td class="value"><a class="btn btn-sm btn-info page-modal" href="<?php print_link("persetujuan_disposisi"); ?>?id=<?php echo $data['id_index']; ?>">Lihat Persetujuan</a></td>
+                                    </tr> -->
+                                </tbody>
+                                <!-- Table Body End -->
+                            </table>
+                            <br>
+                            <h3>Riwayat Disposisi</h3>
+                            <?php $dataDis = $comp_model->tableDisposisi($data['id_surat']) ?>
+                            <table class="table table-hover table-borderless table-striped">
+                                <!-- <thead>
+                                    <tr>
+                                        <td>Pengguna</td>
+                                        <td>Isi Disposisi</td>
+                                    </tr>
+                                </thead> -->
+                                <tbody class="page-data">
+                                    <?php foreach($dataDis as $dt) {?>
+                                    <tr>
+                                        <td><?php echo $dt['pengguna']?></td>
+                                        <td><?php echo $dt['isi_disposisi']?></td>
+                                    </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
                         </div>
                     </section>

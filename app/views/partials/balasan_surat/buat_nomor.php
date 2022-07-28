@@ -126,7 +126,6 @@ $nomor = $_GET['id'];
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
 <script>
     $(document).ready(() => {
-        $('#addButton').css('display','none')
         var canvasDiv = document.getElementById('canvasDiv');
         var canvas = document.createElement('canvas');
         canvas.setAttribute('id', 'canvas');
@@ -139,7 +138,6 @@ $nomor = $_GET['id'];
         
         context = canvas.getContext("2d");
         $('#canvas').mousedown(function(e) {
-            $('#addButton').css('display','inline-block')
             var offset = $(this).offset()
             var mouseX = e.pageX - this.offsetLeft;
             var mouseY = e.pageY - this.offsetTop;
@@ -154,6 +152,7 @@ $nomor = $_GET['id'];
                 var offset = $(this).offset()
                 //addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
                 addClick(e.pageX - offset.left, e.pageY - offset.top, true);
+                console.log(e.pageX, offset.left, e.pageY, offset.top);
                 redraw();
             }
         });

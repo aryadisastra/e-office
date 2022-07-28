@@ -39,6 +39,7 @@ $show_pagination = $this->show_pagination;
                                     <thead class="table-header bg-light">
                                         <tr>
                                             <th class="td-sno">#</th>
+                                            <th  class="td-pengguna"> Tanggal</th>
                                             <th  class="td-pengguna"> Pengguna</th>
                                             <th  class="td-pengguna"> Bentuk</th>
                                             <th  class="td-tanggal"> .....</th>
@@ -57,6 +58,7 @@ $show_pagination = $this->show_pagination;
                                         ?>
                                         <tr>
                                             <th class="td-sno"><?php echo $counter; ?></th>
+                                            <td class="td-pengguna"> <?php echo date('d-M-Y H:i',strtotime($data['tanggal'])); ?></td>
                                             <td class="td-pengguna"> <?php echo $data['pengguna']; ?></td>
                                             <td class="td-pengguna"> <?php echo $data['bentuk'] ?></td>
                                             <td class="td-tanggal" style=" width : 50px">
