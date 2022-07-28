@@ -23,13 +23,13 @@ class ACL
 			'balasan_surat' => array('list', 'view', 'add', 'edit', 'editfield', 'delete', 'import_data','kembalikan','buat_nomor'),
 			'dis' => array('list', 'view'),
 			'dis_fil' => array('list', 'view'),
-			'index_surat' => array('list_keluar','list_disposisi','selesaikan_surat','log_surat_selesai','log_surat_ditolak','surat_ditolak','surat_selesai','buat_nomor','cek_signature','list', 'view', 'add', 'edit', 'editfield', 'delete', 'tb_masuk', 'tb_disposisi', 'index_masuk', 'index_keluar', 'index_disposisi', 'masuk', 'keluar', 'disposisi', 'import_data','cek_disposisi','log','cek_catatan','distribusi'),
+			'index_surat' => array('cek_tembusan','selesaikan_surat','log_surat_selesai','log_surat_ditolak','surat_ditolak','surat_selesai','buat_nomor','cek_signature','list', 'view', 'add', 'edit', 'editfield', 'delete', 'tb_masuk', 'tb_disposisi', 'index_masuk', 'index_keluar', 'index_disposisi', 'masuk', 'keluar', 'disposisi', 'import_data','cek_disposisi','log','cek_catatan','distribusi'),
 			'nondis' => array('list', 'view'),
 			'persetujuan_disposisi' => array('list', 'view', 'add', 'edit', 'editfield', 'delete', 'group_disposisi', 'import_data'),
 			'sifat_persetujuan' => array('list', 'view', 'add', 'edit', 'editfield', 'delete', 'import_data'),
 			'notnondis' => array('list', 'view'),
 			'dis_final' => array('list', 'view'),
-			'surat_masuk' => array('list','cek_signature', 'view','distribusi','add'),
+			'surat_masuk' => array('list','cek_signature', 'view','distribusi'),
 			'report' => array('disposisi'),
 		),
 
@@ -39,19 +39,13 @@ class ACL
 			'balasan_surat' => array('list', 'add','kembalikan','buat_nomor','verifikasi'),
 			'dis' => array('view'),
 			'dis_fil' => array('view'),
-			'index_surat' => array('list_print','list_keluar','list_disposisi','selesaikan_surat','log_surat_selesai','log_surat_ditolak','surat_ditolak','surat_selesai','buat_nomor','cek_signature','view', 'add', 'tb_masuk', 'tb_disposisi', 'index_masuk', 'index_keluar', 'index_disposisi', 'masuk', 'keluar', 'disposisi', 'import_data','cek_disposisi','log','cek_catatan','distribusi'),
+			'index_surat' => array('cek_tembusan','selesaikan_surat','buat_verifikasi','log_surat_selesai','log_surat_ditolak','surat_ditolak','surat_selesai','buat_nomor','cek_signature','view', 'add', 'tb_masuk', 'tb_disposisi', 'index_masuk', 'index_keluar', 'index_disposisi', 'masuk', 'keluar', 'disposisi', 'import_data','cek_disposisi','log','cek_catatan','distribusi'),
 			'nondis' => array('view'),
 			'persetujuan_disposisi' => array('list', 'add'),
 			'notnondis' => array('view'),
 			'dis_final' => array('view'),
 			'surat_masuk' => array('list','cek_signature', 'view','add','disposisi','distribusi'),
 			'report' => array('disposisi'),
-		),
-
-		'kaur' =>
-		array(
-			'surat_masuk' => array('list_print','list','cek_signature', 'view','add','disposisi','distribusi','log'),
-			'index_surat' => array('list_print','list_keluar','list_disposisi','selesaikan_surat','log_surat_selesai','log_surat_ditolak','surat_ditolak','surat_selesai','buat_nomor','cek_signature','view', 'add', 'tb_masuk', 'tb_disposisi', 'index_masuk', 'index_keluar', 'index_disposisi', 'masuk', 'keluar', 'disposisi', 'import_data','cek_disposisi','log','cek_catatan','distribusi'),
 		),
 
 		'superadmin' =>
@@ -62,7 +56,7 @@ class ACL
 			'balasan_surat' => array('list', 'view','edit', 'editfield', 'delete', 'import_data','kembalikan','buat_nomor'),
 			'dis' => array('list', 'view'),
 			'dis_fil' => array('list', 'view'),
-			'index_surat' => array('list_keluar','list_disposisi','log_surat_selesai','log_surat_ditolak','surat_ditolak','surat_selesai','buat_nomor','cek_signature','list', 'view','edit', 'editfield', 'delete', 'tb_masuk', 'tb_disposisi', 'index_masuk', 'index_keluar', 'index_disposisi', 'masuk', 'keluar', 'disposisi', 'import_data','cek_disposisi','log','cek_catatan'),
+			'index_surat' => array('cek_tembusan','log_surat_selesai','log_surat_ditolak','surat_ditolak','surat_selesai','buat_nomor','cek_signature','list', 'view','edit', 'editfield', 'delete', 'tb_masuk', 'tb_disposisi', 'index_masuk', 'index_keluar', 'index_disposisi', 'masuk', 'keluar', 'disposisi', 'import_data','cek_disposisi','log','cek_catatan'),
 			'nondis' => array('list', 'view'),
 			'persetujuan_disposisi' => array('list', 'view','edit', 'editfield', 'delete', 'group_disposisi', 'import_data'),
 			'sifat_persetujuan' => array('list', 'view','edit', 'editfield', 'delete', 'import_data'),

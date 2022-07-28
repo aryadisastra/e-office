@@ -86,35 +86,6 @@ $nomor = $_GET['id'];
                                             <div class="form-group ">
                                                 <div class="row">
                                                     <div class="col-sm-4">
-                                                        <label class="control-label" for="kepada">Kepada <span class="text-danger">*</span></label>
-                                                    </div>
-                                                    <div class="col-sm-8" >
-                                                        <div class="" style="border-style: dashed; padding-left : 10px; border-color : #969590;">
-                                                            <?php 
-                                                                $kepada_options = $comp_model -> index_surat_dircab_option_list();
-                                                                if(!empty($kepada_options)){
-                                                                    foreach($kepada_options as $option){
-                                                                        $value = (!empty($option['value']) ? $option['value'] : null);
-                                                                        $label = (!empty($option['label']) ? $option['label'] : $value);
-                                                                        $selected = $this->set_field_selected('kepada',$value, "");
-                                                                        ?>
-                                                                        <div class="form-check">
-                                                                            <input type="checkbox" name="kepada[]" id="<?php echo 'ctrl-kepada'.$value; ?>" value="<?php echo $value; ?>" class="form-check-input">
-                                                                            <label class="form-check-label" for="<?php echo 'ctrl-kepada'.$value; ?>">   
-                                                                                <?php echo strtoupper($label); ?>
-                                                                            </label>
-                                                                        </div>
-                                                                <?php
-                                                                    }
-                                                                }
-                                                                ?>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="form-group ">
-                                                <div class="row">
-                                                    <div class="col-sm-4">
                                                         <label class="control-label" for="balasan">Catatan <span class="text-danger">*</span></label>
                                                     </div>
                                                     <div class="col-sm-8">
@@ -129,8 +100,8 @@ $nomor = $_GET['id'];
                                         <div class="form-group form-submit-btn-holder text-center mt-3">
                                             <div class="form-ajax-status"></div>
                                             <button class="btn btn-primary" type="submit" id="addButton">
-                                                Kirim
-                                                <i class="fa fa-send"></i>
+                                                <i class="fa fa-check"></i>
+                                                Selesaikan
                                             </button>
                                         </div>
                                     </form>
