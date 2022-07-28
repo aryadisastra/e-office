@@ -37,7 +37,7 @@ $redirect_to = $this->redirect_to;
                         <form id="index_surat-add-form" role="form" novalidate enctype="multipart/form-data" class="form page-form form-horizontal needs-validation" action="<?php print_link("index_surat/add?csrf_token=$csrf_token") ?>" method="post">
                             <div>
                                 <div class="form-group ">
-                                    <div class="row">
+                                    <!-- <div class="row">
                                         <div class="col-sm-4">
                                             <label class="control-label" for="nomor_surat">Nomor Surat <span class="text-danger">*</span></label>
                                         </div>
@@ -48,7 +48,7 @@ $redirect_to = $this->redirect_to;
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <div class="form-group ">
                                         <div class="row">
                                             <div class="col-sm-4">

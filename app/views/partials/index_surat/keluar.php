@@ -229,13 +229,13 @@ $show_export_btn = $this->show_export_btn;
                                 <?php if($data['status'] != 404){?>
                                     <?php if($data['can_act'] == true){?>
                                         
-                                        <!-- <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN != 3 && USER_BAGIAN != 5 && $data['tahap_surat'] != 2){?>
+                                        <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN != 3 && USER_BAGIAN != 5 && $data['tahap_surat'] != 2){?>
                                         <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("balasan_surat/add"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
                                             <i class="fa fa-send"></i> Lanjutkan
                                         </a>
-                                        <?php } ?> -->
+                                        <?php } ?>
     
-                                        <?php if($data['status'] == USER_BAGIAN  && USER_BAGIAN != 1 && USER_BAGIAN != 5){?>
+                                        <?php if($data['status'] == USER_BAGIAN && USER_BAGIAN != 3 && USER_BAGIAN != 5 && $data['tahap_surat'] == 2 && USER_BAGIAN != 1){?>
                                         <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("balasan_surat/add"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
                                             <i class="fa fa-send"></i> Lanjutkan
                                         </a>
@@ -259,11 +259,11 @@ $show_export_btn = $this->show_export_btn;
                                         </a>
                                         <?php } ?>
     
-                                        <!-- <?php if(USER_BAGIAN == 3 && $data['tahap_surat'] != 2){?>
+                                        <?php if(USER_BAGIAN == 3 && $data['tahap_surat'] != 2){?>
                                         <a class="btn btn-sm btn-success page-modal"  href="<?php print_link("balasan_surat/buat_nomor"); ?>?id=<?php echo $data['id_surat']; ?>&sumber=2&flow=<?php echo $data['flow_status']; ?>">
                                             <i class="fa fa-send"></i> Buatkan Nomor
                                         </a>
-                                        <?php } ?> -->
+                                        <?php } ?>
     
                                     <?php } ?>
                                <?php } ?>

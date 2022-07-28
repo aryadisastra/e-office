@@ -29,7 +29,7 @@ class ACL
 			'sifat_persetujuan' => array('list', 'view', 'add', 'edit', 'editfield', 'delete', 'import_data'),
 			'notnondis' => array('list', 'view'),
 			'dis_final' => array('list', 'view'),
-			'surat_masuk' => array('list','cek_signature', 'view','distribusi','add'),
+			'surat_masuk' => array('list','cek_signature', 'view','distribusi'),
 			'report' => array('disposisi'),
 		),
 

@@ -164,7 +164,7 @@ class Index_suratController extends SecureController
 			);
 			$this->filter_vals = true; //set whether to remove empty fields
 			$modeldata = $this->modeldata = $this->validate_form($postdata);
-			$modeldata['nomor_surat'] = $postdata['nomor_surat'];
+			$modeldata['nomor_surat'] = null;
 			$modeldata['status'] = 2;
 			$modeldata['status_persetujuan'] = 1;
 			$modeldata['tahap_surat'] = 1;
@@ -185,8 +185,8 @@ class Index_suratController extends SecureController
 			if ($this->validated()) {
 				// return print_r($modeldata);
 				$rec_id = $this->rec_id = $db->insert($tablename, $modeldata);
-				$log = $db->query("INSERT INTO log_surat (id_surat,nomor_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$fixedId."','".$modeldata['nomor_surat']."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Buat','".$postdata['lampiran']."',2)");
-				$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,nomor_surat,pengguna,catatan,waktu,keterangan,lampiran,sumber) VALUES ('".$fixedId."','".$modeldata['nomor_surat']."','".USER_NAMA."','".$modeldata['keterangan']."','".date("Y-m-d H:i",time())."','Di Buat','".$postdata['lampiran']."',2)");
+				$log = $db->query("INSERT INTO log_surat (id_surat,pengguna,waktu,keterangan,lampiran,sumber) VALUES ('".$fixedId."','".USER_NAMA."','".date("Y-m-d H:i",time())."','Di Buat','".$postdata['lampiran']."',2)");
+				$catatan = $db->query("INSERT INTO log_catatan_surat (id_surat,pengguna,catatan,waktu,keterangan,lampiran,sumber) VALUES ('".$fixedId."','".USER_NAMA."','".$modeldata['keterangan']."','".date("Y-m-d H:i",time())."','Di Buat','".$postdata['lampiran']."',2)");
 				if (!isset($formdata['disposisi'])){
 					if(strtolower(USER_NAME) != 'operator') {
 						$db->query('UPDATE index_surat SET status_persetujuan = 1 where nomor_surat = '.$modeldata['nomor_surat']);
